@@ -37,4 +37,19 @@ class DiscenteController extends Controller
             return redirect()->back()->with('error', 'Erro ao cadastrar discente. Por favor, selecione uma imagem válida.');
         }
     }
+    public function index()
+   {
+    $discente = Discente::all();
+        return view('sistema.aluno-index', compact('discente'));
+    }
+
+    public function edit($id){
+        $discente = Discente::findOrFail($id);
+        return view('sistema.editDiscente', compact('discente'));
+    }
+    public function update(Request $request, $id) {
+        $discente = Discente::findOrFail($id);
+        $discente->update($request->all());
+        return redirect()->route('index-aluno', ['discente' => $discente->id]);
+    }
 }

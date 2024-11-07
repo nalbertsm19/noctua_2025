@@ -28,8 +28,6 @@ Route::get('/prof', function()
     return view('sistema.index-professor');
 })->name('indexProfessor');
 
-Route::get('/aluno',[DocenteController::class, 'index'])->name('index-aluno');
-
 Route::get('/cadDocente', function(){
      return view('sistema.cadastroDocente');
 });
@@ -39,12 +37,17 @@ Route::post('cadDocente', [DocenteController::class, 'store'])->name('docente-st
 Route::get('/prof/{id}/editDocente', [DocenteController::class,  'edit'])->name('docente.edit');
 Route::put('/prof/{id}/atualizar', [DocenteController::class, 'update'])->name('docente.update');
 
+Route::get('/cadProjeto', [ProjetoController::class, 'index'])->name('projeto-index');
+
 Route::post('/cadReuniao', [ReuniaoController::class, 'store'])->name('reuniao-store');
+
+Route::get('/aluno',[DocenteController::class, 'index'])->name('index-aluno');
+
 Route::get('/cadDiscente', function(){
       return view('sistema.cadastroDiscente');
 });
-
-Route::get('/cadProjeto', [ProjetoController::class, 'index'])->name('projeto-index');
+Route::get('/aluno/{id}/editDiscente', [DiscenteController::class,  'edit'])->name('discente.edit');
+Route::put('/aluno/{id}/atualizar', [DiscenteController::class, 'update'])->name('discente.update');
 
 Route::post('/cadDiscente',[DiscenteController::class, 'store'])->name('discente-store');
 Route::get('/Discente', function(){
