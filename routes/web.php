@@ -33,7 +33,6 @@ Route::get('/cadDocente', function(){
 });
 
 Route::post('cadDocente', [DocenteController::class, 'store'])->name('docente-store');
-
 Route::get('/prof/{id}/editDocente', [DocenteController::class,  'edit'])->name('docente.edit');
 Route::put('/prof/{id}/atualizar', [DocenteController::class, 'update'])->name('docente.update');
 
@@ -48,7 +47,6 @@ Route::get('/cadDiscente', function(){
 });
 Route::get('/aluno/{id}/editDiscente', [DiscenteController::class,  'edit'])->name('discente.edit');
 Route::put('/aluno/{id}/atualizar', [DiscenteController::class, 'update'])->name('discente.update');
-
 Route::post('/cadDiscente',[DiscenteController::class, 'store'])->name('discente-store');
 Route::get('/Discente', function(){
  return view('sistema.aluno-index');
