@@ -56,7 +56,6 @@ Route::get('/cadArea', function()
 { return view('sistema.cadastroArea');
 })->name('area-create');
 
+Route::get('/cadReuniao',[ReuniaoController::class, 'create' ])->name('reuniao.create');
 
 Route::post('/cadArea', [AreaDeInteresseController::class, 'store'])->name('area-store');
-
-Route::get('/cadReuniao',[ReuniaoController::class, 'create' ])->name('reuniao.create');
