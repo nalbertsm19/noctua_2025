@@ -42,9 +42,8 @@ index-aluno
                     <p class="card-disponibilidade">{{ $professor->disponibilidade}}</p>
                     <p class="card-vagas"><strong>Vagas para Orientação</strong></p>
                   
-                    <form action="#" method="get">
-                    <button type="submit" class="btn btn-success">Saiba Mais</button>
-                    </form>
+                    <a href="{{route('docente-show', ['id'=>$professor->id])}}" class="btn btn-success">Ver detalhes</a>
+
                 </div>
          
         @endforeach
