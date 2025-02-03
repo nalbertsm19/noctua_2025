@@ -1,55 +1,102 @@
-<?php
-
+<?php 
 namespace App\Http\Controllers;
 
 use App\Models\Discente;
+use App\Models\Docente;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;  // Adicione esta linha no início do seu arquivo
+use App\Models\ProjetoDocente;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Rules\CpfValid;
+use Illuminate\Support\Facades\Hash;
+
 
 class DiscenteController extends Controller
 {
+    
     public function store(Request $request)
     {
-        // Validação dos dados do formulário
         $request->validate([
-            'nome' => 'required|string',
-            'email' => 'required|email',
-            'cpf' => 'required|string',
-            'imagem' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Exemplo de validação para imagem
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'cpf' => ['required', 'unique:discentes,cpf', new CpfValid],
+            'imagem' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'required|string|min:6',
         ]);
 
-        // Verifica se há upload de imagem no request
-        if ($request->hasFile('imagem')) {
-            // Salva a imagem e obtém o caminho
-            $caminhoImagem = $request->file('imagem')->store('imagens', 'public');
+        DB::beginTransaction();
 
-            // Cria um novo discente com os dados do request, incluindo o RA e o caminho da imagem
-            $discente = new Discente();
-            $discente->nome = $request->nome;
-            $discente->email = $request->email;
-            $discente->cpf = $request->cpf;
-            $discente->imagem = $caminhoImagem; 
-            $discente->save();
+        try {
+            // Verifica se há uma imagem e armazena no diretório 'storage/app/public/imagens'
+            $caminhoImagem = null;
+            if ($request->hasFile('imagem')) {
+                $caminhoImagem = $request->file('imagem')->store('imagens', 'public');
+            }
 
-            // Redireciona para a rota 'index-aluno' após a criação do discente
+            // Criação do usuário associado
+            $user = User::create([
+                'name' => $request->nome,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'discente',
+                'foto_perfil' => $caminhoImagem,
+            ]);
+
+            // Criação do discente
+            Discente::create([
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'cpf' => $request->cpf,
+                'imagem' => $caminhoImagem,
+                'user_id' => $user->id,
+            ]);
+
+            DB::commit();
+
             return redirect()->route('index-aluno')->with('success', 'Discente cadastrado com sucesso.');
-        } else {
-            // Caso não haja upload de imagem, retorna com erro
-            return redirect()->back()->with('error', 'Erro ao cadastrar discente. Por favor, selecione uma imagem válida.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'Erro ao cadastrar discente: ' . $e->getMessage()]);
         }
     }
-    public function index(): Factory|View
-   {
-    $discente = Discente::all();
-        return view('sistema.aluno-index', compact('discente'));
-    }
 
-    public function edit($id){
+    
+    public function destroy($id)
+{
+    $discente = Discente::findOrFail($id);
+    $discente->delete(); // Exclui o discente
+    return redirect()->route('sistema.orientando')->with('success', 'Discente excluído com sucesso!');
+}
+
+    
+    
+    public function edit($id)
+    {
         $discente = Discente::findOrFail($id);
         return view('sistema.editDiscente', compact('discente'));
     }
-    public function update(Request $request, $id) {
+
+    public function update(Request $request, $id)
+    {
         $discente = Discente::findOrFail($id);
         $discente->update($request->all());
         return redirect()->route('index-aluno', ['discente' => $discente->id]);
     }
+
+    public function show()
+    {
+        $user = Auth::user();  // Obtém o usuário autenticado
+        $discentes = $user->discente;  // Acessa o relacionamento (ajuste conforme o relacionamento entre Discente e Usuário)
+    
+        if (!$discentes) {
+            // Caso o usuário não tenha o relacionamento Discente, redireciona para o dashboard
+            return redirect()->route('dashboard')->withErrors('Dados do discente não encontrados.');
+        }
+    
+        return view('sistema.perfil-discente', compact('discentes'));  // Retorna a view do perfil do discente
+    }
+    
+
 }

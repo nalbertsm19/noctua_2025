@@ -10,7 +10,7 @@ use App\Models\Projeto;
 class Discente extends Model
 {
 
-    protected $fillable=['imagem','nome','email','cpf','id_projeto','turma'];
+    protected $fillable=['imagem','nome','email','cpf','id_projeto', 'password','turma','user_id'];
 
     public function projeto()
     {

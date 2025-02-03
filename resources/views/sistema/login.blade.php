@@ -13,12 +13,15 @@ Noctua-Login
     </div>
 
     <div class="formulario">
-        <form action="{{ route('login') }}" method="POST">
-            @csrf 
+        <form action="{{ route('login.store') }}" method="POST">
+            @csrf
             <p style="font-size:20px">Acesso à plataforma</p>
 
             <!-- Campo de email -->
             <label for="email">Identificação de usuário (e-mail)</label>
+            @error('email')
+              <span>{{$message}}</span>
+            @enderror
             <input type="email" name="email" id="email" placeholder="Informe seu e-mail" class="form-control" required>
 
             <!-- Campo de senha -->

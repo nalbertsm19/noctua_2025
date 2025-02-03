@@ -10,7 +10,7 @@ class Reuniao extends Model
 {
     use HasFactory;
 
-    protected $table = 'reuniao'; // Certifique-se de que o nome da tabela está correto
+    protected $table = 'reuniao'; 
     protected $fillable = ['id_projeto', 'id_docente', 'dataHora', 'resumo', 'status_reuniao'];
 
     public function projeto()

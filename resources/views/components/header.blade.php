@@ -3,7 +3,7 @@
     <img src="/storage/arquivos/logoIfms.jpeg" alt="logoifms">
     </div>
 
-        <h1>Sistema de Busca de Orientadores</h1>
+        <h1>Noctua</h1>
 
     <a href="{{route('inicio')}}" class="card-link">
     <div class="btSairIndexProf">

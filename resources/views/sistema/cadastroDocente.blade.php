@@ -54,6 +54,12 @@ Cadastro Docentes
  @if ($errors->has('curriculo_lates'))
           <span class="text-danger">{{ $errors->first('curriculo_lates') }}</span>
 @endif
+
+<label for="password">Senha</label>
+ <input type="text" name="password" placeholder="Crie uma senha de acesso" class="form-control" value="{{old('curriculo_lates')}}">
+ @if ($errors->has('password'))
+          <span class="text-danger">{{ $errors->first('password') }}</span>
+@endif
  <button type="submit" class="btn btn-light">Finalizar Cadastro</button>
 </form>
 </div>

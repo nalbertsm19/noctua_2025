@@ -4,32 +4,43 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Valida os dados de entrada
-        $credentials = $request->validate([
+        // Valida os dados do formulário
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Tenta autenticar o usuário com as credenciais
+        $credentials = $request->only('email', 'password');
+
+        // Tenta autenticar o usuário na tabela `users`
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Verifica o papel do usuário
-            if ($user->role === 'coordenador') {
-                return redirect()->route('coordenador.index');
+            // Verifica o tipo de usuário (role)
+            if ($user->role === 'docente') {
+                return redirect()->route('dashboard-docente')->with('success', 'Bem-vindo, Docente!');
+            } elseif ($user->role === 'discente') {
+                return redirect()->route('dashboard-discente')->with('success', 'Bem-vindo, Discente!');
+            } else {
+                Auth::logout();
+                return redirect()->route('login')->with('error', 'Tipo de usuário inválido.');
             }
-
-            // Logout se não for coordenador
-            Auth::logout();
-            return redirect()->route('login')->with('error', 'Acesso não autorizado.');
         }
 
-        // Erro se as credenciais estiverem incorretas
-        return redirect()->route('login')->with('error', 'Credenciais incorretas.');
+        // Retorna erro se a autenticação falhar
+        return redirect()->back()->with('error', 'Credenciais inválidas.');
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->route('login')->with('success', 'Você saiu com sucesso.');
     }
 }
