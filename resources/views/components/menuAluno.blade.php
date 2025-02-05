@@ -15,6 +15,9 @@
     </div>
    
     <nav>
+    <a href="{{ route('index-aluno') }}" class="{{ Route::currentRouteName() == 'indexProfessor' ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Inicio
+        </a>
         <a href="{{route('reuniao.index')}}">Minhas reuniões</a>
         <a href="{{ route('projetos.indexdiscente') }}">Meu projeto</a>
     </nav>

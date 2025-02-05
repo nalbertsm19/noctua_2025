@@ -10,9 +10,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-   
-
 }
+  
+
+
+
 .link{
     color:blue;
   
@@ -336,7 +338,6 @@ footer{
 .cadastrarForm{
     display:flex;
     flex-direction: column;
-    align-items: flexcenter;
     justify-content: center;
     margin:0 auto;
     border-radius: 25px;
@@ -505,6 +506,26 @@ footer{
     margin-top: 10px;
     color: #2c2929; /* Cor suave para a mensagem */
 }
+
+.menu-links a {
+    text-decoration: none;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.menu-links a.active {
+    background-color: #28a745; /* Cor de fundo quando a página está ativa */
+    color: white; /* Cor do texto quando ativo */
+    transform: translateY(2px); /* Efeito de "botão pressionado" */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para dar a impressão de profundidade */
+}
+
+.menu-links a:hover {
+    background-color: #218838; /* Cor de fundo quando passa o mouse */
+}
+
 
 .card-body{
     display: flex; 

@@ -6,10 +6,11 @@ Criar Reunião
 
 @section('content')
 <div id="espacoReuniao">
+<a href="{{route('saiba.reuniao')}}" class="btn btn-danger">Conheça as restrições para reuniões</a>
 <form action="{{ route('reuniao.store') }}" method="post">
     @csrf
     <h1 style="color:white">Crie uma nova Reunião</h1>
-
+   
     <!-- Campo Projeto -->
     <label for="id_projeto">Projeto:</label>
     <select name="id_projeto" id="id_projeto" class="form-control" required>
@@ -28,22 +29,10 @@ Criar Reunião
         <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
-    <!-- Resumo da Reunião -->
-    <label for="resumo">Resumo:</label>
+    <!-- Objetivo da Reunião -->
+    <label for="resumo">Objetivo:</label>
     <input type="text" name="resumo" id="resumo" class="form-control" required>
     @error('resumo')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-
-    <!-- Status da Reunião -->
-    <label for="statusReuniao">Status Reunião:</label>
-    <select name="statusReuniao" id="statusReuniao" class="form-control" required>
-        <option value="" disabled selected>Selecione o status da reunião</option>
-        <option value="1">Agendada</option>
-        <option value="2">Cancelada</option>
-        <option value="3">Aluno Ausente</option>
-    </select>
-    @error('statusReuniao')
         <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 

@@ -135,3 +135,7 @@ Route::get('/reuniao', function() {
     return view('sistema.minhasReunioes');
 })->name('minhas-reunioes');
 
+Route::get('/reunioes/saiba-mais', function(){
+    return view('sistema.saibaMaisReuniao');
+})->name('saiba.reuniao');
+

@@ -67,10 +67,6 @@ public function buscar(Request $request)
     return response()->json($docentes);
 }
 
-
-    
-
-
     public function login(Request $request)
 {
     $credentials = $request->only('email', 'password');

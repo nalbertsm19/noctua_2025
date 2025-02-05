@@ -10,7 +10,7 @@ class AreaDeInteresseController extends Controller
     public function store(Request $request)
     {
         AreaInteresse::create($request->all());
-        return redirect()->route('inicio');
+        return redirect()->route('indexProfessor');
 
     }
 }

@@ -3,7 +3,7 @@
     <img src="/storage/arquivos/logoIfms.jpeg" alt="logoifms">
     </div>
 
-        <h1>Noctua</h1>
+        <h1 style="font-size:35px";>Noctua</h1>
 
     <a href="{{route('inicio')}}" class="card-link">
     <div class="btSairIndexProf">

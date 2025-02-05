@@ -17,4 +17,10 @@ class Discente extends Model
         return $this->belongsTo(Projeto::class, 'id_projeto');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+
 }

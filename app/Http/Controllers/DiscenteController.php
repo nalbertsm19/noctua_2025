@@ -99,4 +99,28 @@ class DiscenteController extends Controller
     }
     
 
+
+
+    public function listarDiscentes()
+    {
+        // Obtém o docente logado
+        $docente = Auth::user();  // Usuário logado é o docente
+    
+        // Obtém os projetos do docente através da tabela pivô
+        $projetosDoDocente = $docente->projetos;  // Relacionamento many-to-many
+    
+        // Verifica se o docente tem projetos
+        if ($projetosDoDocente->isEmpty()) {
+            // Caso não tenha projetos, retorne um array vazio de discentes
+            $discentes = collect();
+        } else {
+            // Busca os discentes que possuem um projeto associado aos projetos do docente
+            $discentes = Discente::whereIn('id_projeto', $projetosDoDocente->pluck('id'))->get();
+        }
+    
+        // Retorna a view com os discentes e o docente
+        return view('sistema.orientando', compact('discentes', 'docente'));
+    }
+    
+
 }

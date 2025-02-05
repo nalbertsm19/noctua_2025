@@ -30,7 +30,15 @@
                                     Projeto criado {{ $projeto->created_at->locale('pt_BR')->diffForHumans() }}
                                 </p>
 
-                                
+                                <!-- Botão de Ver Mais -->
+                                <div class="d-flex justify-content-end mt-3">
+                                    <a href="{{ route('projetos.show', $projeto->id) }}" class="btn btn-sm btn-info me-2">Ver Mais</a>
+                                    @if(Auth::user()->docente)
+                                    <a href="{{ route('projetos.edit', $projeto->id) }}" class="btn btn-sm btn-primary me-2">Editar</a>
+                                    @elseif(Auth::user()->discente && is_null(Auth::user()->discente->id_projeto))
+                                     <a href="{{ route('projetos.associar', $projeto->id) }}" class="btn btn-sm btn-secondary">Me associar a esse projeto</a>
+                                    @endif
+                                </div>
 
                                 <!-- Lista de Discentes -->
                                 <h5 class="mt-3">Participantes:</h5>
@@ -48,24 +56,19 @@
                                                     <h6 class="mb-1 text-truncate" title="{{ $discente->nome }}">{{ $discente->nome }}</h6>
                                                     <p class="text-muted mb-0 text-truncate" title="{{ $discente->email }}">{{ $discente->email }}</p>
                                                 </div>
-
+                                                 
+                                                @if(Auth::user()->docente)
                                                 <!-- Botão de Excluir -->
                                                 <button class="btn btn-sm btn-outline-danger" data-id="{{ $discente->id }}" onclick="removerDiscente({{ $discente->id }})">
                                                     Remover
                                                 </button>
+                                                @endif
                                             </div>
                                         @endforeach
                                     </div>
                                 @endif
 
-                                <div class="d-flex justify-content-end">
-                                    @if(Auth::user()->docente)
-                                        <a href="{{ route('projetos.edit', $projeto->id) }}" class="btn btn-sm btn-primary me-2">Editar</a>
-                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal" data-id="{{ $projeto->id }}">Excluir</button>
-                                    @elseif(Auth::user()->discente)
-                                        <a href="{{ route('projetos.associar', $projeto->id) }}" class="btn btn-sm btn-secondary">Me associar a esse projeto</a>
-                                    @endif
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
