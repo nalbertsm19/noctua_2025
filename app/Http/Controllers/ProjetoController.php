@@ -205,4 +205,22 @@ public function destroy($id)
     }
 }
 
+
+
+public function remover($discenteId)
+{
+    // Encontra o discente pelo ID
+    $discente = Discente::find($discenteId);
+
+    if (!$discente) {
+        return redirect()->route('projetos.index')->with('error', 'Discente não encontrado.');
+    }
+
+    // Remove a associação do discente com o projeto
+    $discente->id_projeto = null;
+    $discente->save();
+
+    return redirect()->route('projetos.index')->with('success', 'Discente removido com sucesso.');
+}
+
 }

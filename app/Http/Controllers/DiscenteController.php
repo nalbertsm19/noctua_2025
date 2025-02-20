@@ -16,51 +16,57 @@ class DiscenteController extends Controller
 {
     
     public function store(Request $request)
-    {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'cpf' => ['required', 'unique:discentes,cpf', new CpfValid],
-            'imagem' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'password' => 'required|string|min:6',
+{
+    $request->validate([
+        'nome' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'cpf' => ['required', 'unique:discentes,cpf', new CpfValid],
+        'imagem' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'turma' => 'required|string|max:5',
+        'password' => 'required|string|min:6',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Remove a formatação do CPF (mantém apenas números)
+        $cpfLimpo = preg_replace('/\D/', '', $request->cpf);
+
+        // Verifica se há uma imagem e armazena no diretório 'storage/app/public/imagens'
+        $caminhoImagem = null;
+        if ($request->hasFile('imagem')) {
+            $caminhoImagem = $request->file('imagem')->store('imagens', 'public');
+        }
+
+        // Criação do usuário associado
+        $user = User::create([
+            'name' => $request->nome,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'discente',
+            'foto_perfil' => $caminhoImagem,
         ]);
 
-        DB::beginTransaction();
+        // Criação do discente
+        Discente::create([
+            'nome' => $request->nome,
+            'email' => $request->email,
+            'cpf' => $cpfLimpo,
+            'imagem' => $caminhoImagem,
+            'turma' =>  $request->turma,
+            'user_id' => $user->id,
+            'password' => Hash::make($request->password), // Adicionando a senha criptografada
+        ]);
 
-        try {
-            // Verifica se há uma imagem e armazena no diretório 'storage/app/public/imagens'
-            $caminhoImagem = null;
-            if ($request->hasFile('imagem')) {
-                $caminhoImagem = $request->file('imagem')->store('imagens', 'public');
-            }
+        DB::commit();
 
-            // Criação do usuário associado
-            $user = User::create([
-                'name' => $request->nome,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => 'discente',
-                'foto_perfil' => $caminhoImagem,
-            ]);
+        return redirect()->route('index-aluno')->with('success', 'Discente cadastrado com sucesso.');
+    } catch (\Exception $e) {
+        DB::rollBack();
 
-            // Criação do discente
-            Discente::create([
-                'nome' => $request->nome,
-                'email' => $request->email,
-                'cpf' => $request->cpf,
-                'imagem' => $caminhoImagem,
-                'user_id' => $user->id,
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('index-aluno')->with('success', 'Discente cadastrado com sucesso.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return redirect()->back()->withErrors(['error' => 'Erro ao cadastrar discente: ' . $e->getMessage()]);
-        }
+        return redirect()->back()->withErrors(['error' => 'Erro ao cadastrar discente: ' . $e->getMessage()]);
     }
+}
 
     
     public function destroy($id)
@@ -84,19 +90,25 @@ class DiscenteController extends Controller
         $discente->update($request->all());
         return redirect()->route('index-aluno', ['discente' => $discente->id]);
     }
-
     public function show()
     {
-        $user = Auth::user();  // Obtém o usuário autenticado
-        $discentes = $user->discente;  // Acessa o relacionamento (ajuste conforme o relacionamento entre Discente e Usuário)
-    
-        if (!$discentes) {
-            // Caso o usuário não tenha o relacionamento Discente, redireciona para o dashboard
+        // Obtém o usuário logado
+        $user = Auth::user();
+        
+        // Carrega as informações do Discente associado ao User
+        $discente = $user->discente;  // Relacionamento de um para um
+        
+        if (!$discente) {
+            // Caso o discente não exista, redireciona ou exibe erro
             return redirect()->route('dashboard')->withErrors('Dados do discente não encontrados.');
         }
     
-        return view('sistema.perfil-discente', compact('discentes'));  // Retorna a view do perfil do discente
+        // Retorna a view com os dados do discente
+        return view('sistema.perfil-discente', compact('discente'));
     }
+    
+    
+
     
 
 

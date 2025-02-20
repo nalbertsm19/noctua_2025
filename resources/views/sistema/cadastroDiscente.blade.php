@@ -50,10 +50,12 @@
         @enderror
 
         <label for="password">Senha</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Informe sua senha">
+        <input type="text" name="password" id="password" class="form-control" placeholder="Informe sua senha" value="{{ old('password') }}">
         @error('password')
             <div class="text-danger">{{ $message }}</div>
         @enderror
+
+       
 
         <button type="submit" class="btn btn-light">Finalizar Cadastro</button>
     </form>

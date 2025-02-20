@@ -56,10 +56,11 @@ Cadastro Docentes
 @endif
 
 <label for="password">Senha</label>
- <input type="text" name="password" placeholder="Crie uma senha de acesso" class="form-control" value="{{old('curriculo_lates')}}">
- @if ($errors->has('password'))
-          <span class="text-danger">{{ $errors->first('password') }}</span>
-@endif
+        <input type="text" name="password" id="password" class="form-control" placeholder="Informe sua senha" value="{{ old('senha') }}">
+        @error('password')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+
  <button type="submit" class="btn btn-light">Finalizar Cadastro</button>
 </form>
 </div>

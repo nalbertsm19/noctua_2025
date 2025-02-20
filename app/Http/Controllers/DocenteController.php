@@ -137,10 +137,24 @@ public function buscar(Request $request)
         $docente = $user->docente; // Acessa o relacionamento
     
         if (!$docente) {
-            return redirect()->route('dashboard')->withErrors('Dados do docente não encontrados.');
+            return redirect()->route('perfil-docente')->withErrors('Dados do docente não encontrados.');
         }
     
         return view('sistema.perfil-docente', compact('docente'));
+    }
+
+    public function showDocenteforDiscente($id)
+    {
+        // Buscar o docente pelo ID passado na URL
+        $docente = Docente::find($id); // Aqui estamos utilizando o $id que vem da URL
+        
+        // Verificar se o docente foi encontrado
+        if (!$docente) {
+            return redirect()->route('perfil-docente')->withErrors('Dados do docente não encontrados.');
+        }
+        
+        // Retornar a view com a variável $docente
+        return view('sistema.perfilDocenteforDiscente', compact('docente'));
     }
     
 

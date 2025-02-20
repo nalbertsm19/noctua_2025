@@ -77,7 +77,7 @@
     flex-direction:row;
     border-top:10px solid green;
     border-bottom:10px solid green;
-    height: 330px;
+    height: 380px;
     width: 300px;
     border-radius: 15px;
 }
@@ -830,8 +830,8 @@ footer{
     flex-direction: row;
     align-items: flex-end;
     justify-content: flex-end;
-    border: 1px solid rgb(203, 199, 199);
-    background-color: bisque;
+    border: 1px solid rgb(45, 143, 78);
+    background-color: rgb(131, 207, 131);
 }
 
 .menuCoordenador p{
@@ -1091,6 +1091,21 @@ footer{
         max-width: 600px; /* Define um limite máximo */
         color: #333; /* Ajuste de cor opcional */
     }
+
+    @media (max-width: 768px) {
+        .menu-links {
+            /* Ajustar o layout do menu para dispositivos móveis, caso necessário */
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .foto-perfil {
+            /* Ajuste para a foto do perfil, se necessário */
+            margin-top: 10px;
+        }
+    }
+    
 }
 
 

@@ -26,7 +26,7 @@
                     <a href="{{ asset('storage/' . $projeto->matriz_tcc) }}" class="btn btn-custom mb-2 icon-box" target="_blank" download>
                         <i class="fa fa-download" style="color:white;"></i> Baixar Matriz TCC
                     </a>
-                    <button class="btn btn-custom mb-2 icon-box" id="showMatriz">
+                    <button class="btn btn-custom mb-2 icon-box" id="showMatriz" data-file-type="Matriz TCC">
                         <i class="fa fa-eye" style="color:white;"></i> Exibir Matriz TCC
                     </button>
                 </div>
@@ -40,7 +40,7 @@
                     <a href="{{ asset('storage/' . $projeto->termo_compromisso) }}" class="btn btn-custom mb-2 icon-box" target="_blank" download>
                         <i class="fa fa-download" style="color:white;"></i> Baixar Termo de Compromisso
                     </a>
-                    <button class="btn btn-custom mb-2 icon-box" id="showTermo">
+                    <button class="btn btn-custom mb-2 icon-box" id="showTermo" data-file-type="Termo de Compromisso">
                         <i class="fa fa-eye" style="color:white;"></i> Exibir Termo de Compromisso
                     </button>
                 </div>
@@ -72,35 +72,45 @@
 </div>
 
 <script>
-    // Exibir ou esconder Matriz TCC
-    document.getElementById('showMatriz').addEventListener('click', function() {
-        var container = document.getElementById('documentContainer');
-        var title = document.getElementById('documentTitle');
-        var content = document.getElementById('documentContent');
+    // Função para exibir ou ocultar documentos e ajustar o texto do botão
+    function toggleDocument(buttonId, fileType) {
+        const button = document.getElementById(buttonId);
+        const container = document.getElementById('documentContainer');
+        const title = document.getElementById('documentTitle');
+        const content = document.getElementById('documentContent');
+
+        let fileUrl = ""; // Variável para armazenar a URL do arquivo
+
+        // Lógica para determinar a URL com base no tipo de arquivo
+        if (fileType === "Matriz TCC") {
+            fileUrl = "{{ asset('storage/' . $projeto->matriz_tcc) }}"; // URL da Matriz TCC
+        } else if (fileType === "Termo de Compromisso") {
+            fileUrl = "{{ asset('storage/' . $projeto->termo_compromisso) }}"; // URL do Termo de Compromisso
+        }
 
         if (container.style.display === 'none') {
-            title.innerHTML = "Matriz TCC";
-            content.innerHTML = '<iframe src="{{ asset('storage/' . $projeto->matriz_tcc) }}" style="width: 100%; height: 500px;" frameborder="0"></iframe>';
+            title.innerHTML = fileType;
+            content.innerHTML = `<iframe src="${fileUrl}" style="width: 100%; height: 500px;" frameborder="0"></iframe>`;
             container.style.display = 'block'; // Exibir o container ao lado
+            button.innerHTML = `<i class="fa fa-eye-slash" style="color:white;"></i> Ocultar ${fileType}`;
         } else {
             container.style.display = 'none'; // Esconder o container
+            button.innerHTML = `<i class="fa fa-eye" style="color:white;"></i> Exibir ${fileType}`;
         }
+    }
+
+    // Funções para escutar o clique dos botões e passar o tipo de arquivo
+    document.getElementById('showMatriz').addEventListener('click', function() {
+        const fileType = this.getAttribute('data-file-type');
+        toggleDocument('showMatriz', fileType);
     });
 
-    // Exibir ou esconder Termo de Compromisso
     document.getElementById('showTermo').addEventListener('click', function() {
-        var container = document.getElementById('documentContainer');
-        var title = document.getElementById('documentTitle');
-        var content = document.getElementById('documentContent');
-
-        if (container.style.display === 'none') {
-            title.innerHTML = "Termo de Compromisso";
-            content.innerHTML = '<iframe src="{{ asset('storage/' . $projeto->termo_compromisso) }}" style="width: 100%; height: 500px;" frameborder="0"></iframe>';
-            container.style.display = 'block'; // Exibir o container ao lado
-        } else {
-            container.style.display = 'none'; // Esconder o container
-        }
+        const fileType = this.getAttribute('data-file-type');
+        toggleDocument('showTermo', fileType);
     });
 </script>
+
+
 
 @endsection

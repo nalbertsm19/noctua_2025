@@ -97,31 +97,91 @@ public function edit($id)
 
     
 
-    // Listar todas as reuniões do docente logado
-    public function index()
-    {
-        $usuario = Auth::user();
-        $docente = $usuario->docente ?? $usuario; 
-    
-        // Recupera os IDs dos projetos corretamente
+ public function index(Request $request)
+{
+    $usuario = Auth::user();
+    $docente = $usuario->docente ?? $usuario;
+
+    // Se o usuário for um docente
+    if ($usuario->role == 'docente') {
+        // Recupera os IDs dos projetos do docente
         $projetosDocente = DB::table('projeto_docente')
             ->where('id_docente', $docente->id)
             ->pluck('id_projeto')
             ->toArray();
-    
+
+        // Se o docente não tiver projetos, retorna uma coleção vazia
         if (empty($projetosDocente)) {
             return view('sistema.minhasReunioes', [
                 'reunioes' => collect(),
                 'docente' => $docente
             ])->with('warning', 'Nenhuma reunião encontrada.');
         }
-    
-        $reunioes = Reuniao::with('projeto')
-            ->whereIn('id_projeto', $projetosDocente)
-            ->get();
-    
-        return view('sistema.minhasReunioes', compact('reunioes', 'docente'));
+
+        // Inicia a query para o docente, buscando as reuniões dos projetos dele
+        $query = Reuniao::with('projeto')
+            ->whereIn('id_projeto', $projetosDocente);
+    } 
+    // Se o usuário for discente
+    else {
+        // Recupera o ID do projeto ao qual o discente está vinculado
+        $projetoDiscente = DB::table('discentes') // Considerando que a tabela de discentes tem o id_projeto
+            ->where('id', $usuario->id)
+            ->pluck('id_projeto')
+            ->first();
+
+        // Se o discente não estiver vinculado a nenhum projeto, retorna uma coleção vazia
+        if (!$projetoDiscente) {
+            return view('sistema.minhasReunioes', [
+                'reunioes' => collect(),
+                'docente' => $docente
+            ])->with('warning', 'Nenhuma reunião encontrada.');
+        }
+
+        // Inicia a query para o discente, buscando as reuniões do projeto ao qual ele está vinculado
+        $query = Reuniao::with('projeto')
+            ->where('id_projeto', $projetoDiscente);
     }
+
+    // Aplica filtro por data, se existir
+    if ($request->has('data') && !empty($request->data)) {
+        $query->whereDate('dataHora', $request->data);
+    }
+
+    // Obtém as reuniões após aplicar os filtros
+    $reunioes = $query->get();
+
+    return view('sistema.minhasReunioes', compact('reunioes', 'docente'));
+}
+
+public function indexDiscente(Request $request)
+{
+    $usuario = Auth::user();
+    $discente = $usuario->discente ?? $usuario;
+
+    // Verifica se o discente está associado a algum projeto
+    if (!$discente->id_projeto) {
+        return view('sistema.minhasReunioes', [
+            'reunioes' => collect(),
+            'discente' => $discente
+        ])->with('warning', 'Você não está associado a nenhum projeto.');
+    }
+
+    // Query para obter as reuniões do projeto do discente
+    $query = Reuniao::with('projeto')
+        ->where('id_projeto', $discente->id_projeto);
+
+    // Aplica filtro por data, se houver
+    if ($request->has('data') && !empty($request->data)) {
+        $query->whereDate('dataHora', $request->data);
+    }
+
+    // Obtém as reuniões após aplicar os filtros
+    $reunioes = $query->get();
+
+    return view('sistema.minhasReunioes', compact('reunioes', 'discente'));
+}
+
     
     // Atualizar uma reunião existente
     public function update(Request $request, $id)
@@ -211,6 +271,14 @@ public function destroy($id)
     // Redireciona para a lista de reuniões com uma mensagem de sucesso
     return redirect()->route('reuniao.index')->with('success', 'Reunião excluída com sucesso!');
 }
+public function show($id)
+{
+    $reuniao = Reuniao::with(['docente', 'projeto'])->findOrFail($id);
+    return view('sistema.reunioes-show', compact('reuniao'));
+}
+
+
+
 }
 
 

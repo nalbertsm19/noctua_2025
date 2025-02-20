@@ -8,17 +8,17 @@
         <i class="fas fa-calendar-check me-2"></i>Minhas Reuniões
     </h1>
 
-    <p class="card-text" style="font-size: 1.2rem; font-weight: bold;">
-    {{ \Carbon\Carbon::now()->format('d/m/Y H:i:s') }}
-    </p>
-
     @if (Auth::user()->role == 'docente')
         <div class="d-flex justify-content-between mb-3">
             <a href="{{ route('reunioes.create') }}" class="btn btn-success shadow">
                 <i class="fas fa-plus-circle me-2"></i>Criar Nova Reunião
             </a>
+            <a href="{{ route('calendario.index') }}" class="btn btn-primary shadow">
+                <i class="fas fa-calendar-alt me-2"></i>Ver Calendário
+            </a>
         </div>
-    @endif
+        @endif
+  
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -28,8 +28,35 @@
         <div class="alert alert-warning">{{ session('warning') }}</div>
     @endif
 
+    {{-- Filtro por data --}}
+    <form action="{{ route('reuniao.index') }}" method="GET" class="mb-4">
+        <div class="row g-2">
+            <div class="col-md-4">
+                <label for="data" class="form-label">Filtrar por Data:</label>
+                <input type="date" name="data" id="data" class="form-control" value="{{ request('data') }}">
+            </div>
+            <div class="col-md-2 align-self-end">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+            </div>
+            <div class="col-md-2 align-self-end">
+                <a href="{{ route('reuniao.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Limpar Filtro
+                </a>
+            </div>
+        </div>
+    </form>
+
+    {{-- Verificação para garantir que a variável $reunioes não esteja indefinida --}}
+    @php
+        $reunioes = $reunioes ?? collect();
+    @endphp
+
     @if ($reunioes->isEmpty())
-        <p class="text-muted text-center">{{ Auth::user()->role == 'docente' ? 'Você ainda não agendou nenhuma reunião. ' : 'Sem reuniões, aguarde seu orientador agendar uma nova reunião.' }}</p>
+        <p class="text-muted text-center">
+            {{ Auth::user()->role == 'docente' ? 'Você ainda não agendou nenhuma reunião.' : 'Sem reuniões, aguarde seu orientador agendar uma nova reunião.' }}
+        </p>
     @else
         <div class="table-responsive">
             <table class="table table-hover table-striped table-bordered rounded shadow">
@@ -47,7 +74,7 @@
                     @foreach ($reunioes as $reuniao)
                         @php
                             $dataPassou = \Carbon\Carbon::parse($reuniao->dataHora)->isPast();
-                            $precisaAtualizar = $dataPassou && $reuniao->status_reuniao == 1; // Status "Agendada"
+                            $precisaAtualizar = $dataPassou && $reuniao->status_reuniao == 1;
                         @endphp
 
                         <tr>

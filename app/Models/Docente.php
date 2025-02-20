@@ -37,7 +37,7 @@ class Docente extends Model
 
     public function projetos()
     {
-        return $this->belongsToMany(Projeto::class, 'ProjetoDocente', 'id_docente', 'id_projeto');
+        return $this->belongsToMany(Projeto::class, 'projeto_docente', 'id_docente', 'id_projeto');
     }
     
 
